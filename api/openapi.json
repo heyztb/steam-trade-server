@@ -1,0 +1,193 @@
+{
+  "openapi": "3.1.0",
+  "x-stoplight": {
+    "id": "2vekxbmecnfsz"
+  },
+  "info": {
+    "title": "Steam Trade Server",
+    "version": "0.1.0",
+    "description": "RESTful API to enable users to trade Steam items to and from automated trading accounts",
+    "summary": "API for Steam Trade Server",
+    "contact": {
+      "name": "Zach Blake",
+      "url": "https://twitter.com/heyztb",
+      "email": "ztb@pm.me"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://mit-license.org"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/trade/new": {
+      "parameters": [],
+      "post": {
+        "summary": "Create new TradeProposal",
+        "operationId": "post-trade-new",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "https://steamcommunity.com/tradeoffer/{offerId}"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "description": "Create a new TradeProposal\n\nThe direction of a trade can be defined as follows:\n  1. The trade moves in the direction of the Trade Server when `offer` is empty and `want` is populated with items\n  2. The trade moves in the direction of the user when `offer` is populated and `want` is empty\n  3. The trade is mutual when both `offer` and `want` are populated\n  \n  Trades are validated before they are turned into actual Steam trade offers.",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tradeProposal": {
+                    "$ref": "#/components/schemas/TradeProposal",
+                    "description": "The TradeProposal object"
+                  }
+                },
+                "required": [
+                  "tradeProposal"
+                ]
+              }
+            }
+          },
+          "description": "The body should contain a TradeProposal object."
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TradeProposal": {
+        "title": "TradeProposal",
+        "type": "object",
+        "description": "TradeProposal defines the information necessary for STS to validate and create a trade offer between the appropriate Trade Bot and a user.",
+        "examples": [
+          {
+            "id": 1,
+            "usersteam64": 76561198079251340,
+            "offer": [
+              0
+            ],
+            "want": [
+              0
+            ]
+          }
+        ],
+        "x-stoplight": {
+          "id": "ddaa2b1fc10dd"
+        },
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the given user.",
+            "format": "int64",
+            "minimum": 0,
+            "readOnly": true
+          },
+          "usersteam64": {
+            "type": "integer",
+            "format": "int64",
+            "example": 76561198079251340,
+            "description": "Steam64 ID of the user participating in the trade offer"
+          },
+          "offer": {
+            "description": "items to send",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Asset"
+            }
+          },
+          "want": {
+            "type": "array",
+            "description": "items to receive",
+            "items": {
+              "$ref": "#/components/schemas/Asset"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "usersteam64",
+          "offer",
+          "want"
+        ]
+      },
+      "Asset": {
+        "title": "Asset",
+        "x-stoplight": {
+          "id": "boikjd4691eid"
+        },
+        "type": "object",
+        "description": "Asset defines the information needed to find a specific item on Steam",
+        "properties": {
+          "appID": {
+            "type": "integer",
+            "description": "The game the item belongs to"
+          },
+          "contextID": {
+            "type": "integer"
+          },
+          "assetID": {
+            "type": "integer"
+          },
+          "currencyID": {
+            "type": "integer"
+          },
+          "classID": {
+            "type": "integer"
+          },
+          "instanceID": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "integer"
+          },
+          "missing": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "appID",
+          "contextID",
+          "assetID",
+          "currencyID",
+          "classID",
+          "instanceID",
+          "amount",
+          "missing"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "Auth": {
+        "name": "Authorization",
+        "type": "apiKey",
+        "in": "header",
+        "description": "Bearer token"
+      }
+    }
+  },
+  "security": [
+    {
+      "Auth": []
+    }
+  ]
+}
