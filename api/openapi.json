@@ -47,6 +47,21 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "$ref": "#/components/schemas/Error"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "description": "Create a new TradeProposal\n\nThe direction of a trade can be defined as follows:\n  1. The trade moves in the direction of the Trade Server when `offer` is empty and `want` is populated with items\n  2. The trade moves in the direction of the user when `offer` is populated and `want` is empty\n  3. The trade is mutual when both `offer` and `want` are populated\n  \n  Trades are validated before they are turned into actual Steam trade offers.",
@@ -173,6 +188,30 @@
           "instanceID",
           "amount",
           "missing"
+        ]
+      },
+      "Error": {
+        "title": "Error",
+        "x-stoplight": {
+          "id": "hthag4syc3r9w"
+        },
+        "type": "object",
+        "description": "Error contains information about what went wrong with a request",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "Error code",
+            "example": 404
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Not Found"
+          }
+        },
+        "required": [
+          "code",
+          "message"
         ]
       }
     },
