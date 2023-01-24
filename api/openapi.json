@@ -37,7 +37,7 @@
                 "schema": {
                   "type": "string"
                 },
-                "description": "https://steamcommunity.com/tradeoffer/{offerId}"
+                "description": "https://steamcommunity.com/tradeoffer/{tradeofferid}"
               }
             },
             "content": {
@@ -110,13 +110,6 @@
           "id": "ddaa2b1fc10dd"
         },
         "properties": {
-          "id": {
-            "type": "integer",
-            "description": "Unique identifier for the given user.",
-            "format": "int64",
-            "minimum": 0,
-            "readOnly": true
-          },
           "usersteam64": {
             "type": "integer",
             "format": "int64",
@@ -139,7 +132,6 @@
           }
         },
         "required": [
-          "id",
           "usersteam64",
           "offer",
           "want"
