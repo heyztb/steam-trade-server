@@ -19,10 +19,10 @@ func Start() {
 	}
 
 	go func() {
+		log.Default().Println("Server listening on 127.0.0.1:3000")
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Fatal server error: %s", err.Error())
 		}
-		log.Default().Println("Server listening on 127.0.0.1:3000")
 	}()
 
 	c := make(chan os.Signal, 1)
