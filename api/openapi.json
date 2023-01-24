@@ -27,7 +27,7 @@
     "/trade/new": {
       "parameters": [],
       "post": {
-        "summary": "Create new TradeProposal",
+        "summary": "Create new Trade Offer between User and appropriate Trade Bot",
         "operationId": "post-trade-new",
         "responses": {
           "201": {
