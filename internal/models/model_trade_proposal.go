@@ -8,14 +8,15 @@ package models
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
 // TradeProposal is an object. TradeProposal defines the information necessary for STS to validate and create a trade offer between the appropriate Trade Bot and a user.
 type TradeProposal struct {
 	// Offer: items to send
 	Offer []Asset `json:"offer" mapstructure:"offer"`
-	// Usersteam64: Steam64 ID of the user participating in the trade offer
-	Usersteam64 int64 `json:"usersteam64" mapstructure:"usersteam64"`
+	// TradeUrl: Steam Trade Offer URL of the user participating in the trade
+	TradeUrl string `json:"trade_url,omitempty" mapstructure:"trade_url,omitempty"`
 	// Want: items to receive
 	Want []Asset `json:"want" mapstructure:"want"`
 }
@@ -25,6 +26,9 @@ func (m TradeProposal) Validate() error {
 	return validation.Errors{
 		"offer": validation.Validate(
 			m.Offer, validation.NotNil,
+		),
+		"tradeUrl": validation.Validate(
+			m.TradeUrl, is.RequestURI,
 		),
 		"want": validation.Validate(
 			m.Want, validation.NotNil,
@@ -42,14 +46,14 @@ func (m *TradeProposal) SetOffer(val []Asset) {
 	m.Offer = val
 }
 
-// GetUsersteam64 returns the Usersteam64 property
-func (m TradeProposal) GetUsersteam64() int64 {
-	return m.Usersteam64
+// GetTradeUrl returns the TradeUrl property
+func (m TradeProposal) GetTradeUrl() string {
+	return m.TradeUrl
 }
 
-// SetUsersteam64 sets the Usersteam64 property
-func (m *TradeProposal) SetUsersteam64(val int64) {
-	m.Usersteam64 = val
+// SetTradeUrl sets the TradeUrl property
+func (m *TradeProposal) SetTradeUrl(val string) {
+	m.TradeUrl = val
 }
 
 // GetWant returns the Want property
