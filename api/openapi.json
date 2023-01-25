@@ -1,8 +1,5 @@
 {
   "openapi": "3.1.0",
-  "x-stoplight": {
-    "id": "2vekxbmecnfsz"
-  },
   "info": {
     "title": "Steam Trade Server",
     "version": "0.1.0",
@@ -97,7 +94,7 @@
         "examples": [
           {
             "id": 1,
-            "usersteam64": 76561198079251340,
+            "trade_url": "https://steamcommunity.com/tradeoffer/new/?partner=118985620&token=cNjbWUDT",
             "offer": [
               0
             ],
@@ -106,15 +103,12 @@
             ]
           }
         ],
-        "x-stoplight": {
-          "id": "ddaa2b1fc10dd"
-        },
         "properties": {
-          "usersteam64": {
-            "type": "integer",
-            "format": "int64",
-            "example": 76561198079251340,
-            "description": "Steam64 ID of the user participating in the trade offer"
+          "trade_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://steamcommunity.com/tradeoffer/new/?partner=118985620&token=cNjbWUDT",
+            "description": "Steam Trade Offer URL of the user participating in the trade"
           },
           "offer": {
             "description": "items to send",
@@ -132,16 +126,13 @@
           }
         },
         "required": [
-          "usersteam64",
+          "trade_url",
           "offer",
           "want"
         ]
       },
       "Asset": {
         "title": "Asset",
-        "x-stoplight": {
-          "id": "boikjd4691eid"
-        },
         "type": "object",
         "description": "Asset defines the information needed to find a specific item on Steam",
         "properties": {
@@ -184,9 +175,6 @@
       },
       "Error": {
         "title": "Error",
-        "x-stoplight": {
-          "id": "hthag4syc3r9w"
-        },
         "type": "object",
         "description": "Error contains information about what went wrong with a request",
         "properties": {
