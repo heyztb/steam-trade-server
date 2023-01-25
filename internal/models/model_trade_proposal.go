@@ -16,7 +16,7 @@ type TradeProposal struct {
 	// Offer: items to send
 	Offer []Asset `json:"offer" mapstructure:"offer"`
 	// TradeUrl: Steam Trade Offer URL of the user participating in the trade
-	TradeUrl string `json:"trade_url,omitempty" mapstructure:"trade_url,omitempty"`
+	TradeUrl string `json:"trade_url" mapstructure:"trade_url"`
 	// Want: items to receive
 	Want []Asset `json:"want" mapstructure:"want"`
 }
@@ -28,7 +28,7 @@ func (m TradeProposal) Validate() error {
 			m.Offer, validation.NotNil,
 		),
 		"tradeUrl": validation.Validate(
-			m.TradeUrl, is.RequestURI,
+			m.TradeUrl, validation.Required, is.RequestURI,
 		),
 		"want": validation.Validate(
 			m.Want, validation.NotNil,

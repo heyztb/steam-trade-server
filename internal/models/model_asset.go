@@ -12,8 +12,6 @@ import (
 
 // Asset is an object. Asset defines the information needed to find a specific item on Steam
 type Asset struct {
-	// Amount:
-	Amount int32 `json:"amount" mapstructure:"amount"`
 	// AppID: The game the item belongs to
 	AppID int32 `json:"appID" mapstructure:"appID"`
 	// AssetID:
@@ -22,27 +20,13 @@ type Asset struct {
 	ClassID int32 `json:"classID" mapstructure:"classID"`
 	// ContextID:
 	ContextID int32 `json:"contextID" mapstructure:"contextID"`
-	// CurrencyID:
-	CurrencyID int32 `json:"currencyID" mapstructure:"currencyID"`
 	// InstanceID:
 	InstanceID int32 `json:"instanceID" mapstructure:"instanceID"`
-	// Missing:
-	Missing bool `json:"missing" mapstructure:"missing"`
 }
 
 // Validate implements basic validation for this model
 func (m Asset) Validate() error {
 	return validation.Errors{}.Filter()
-}
-
-// GetAmount returns the Amount property
-func (m Asset) GetAmount() int32 {
-	return m.Amount
-}
-
-// SetAmount sets the Amount property
-func (m *Asset) SetAmount(val int32) {
-	m.Amount = val
 }
 
 // GetAppID returns the AppID property
@@ -85,16 +69,6 @@ func (m *Asset) SetContextID(val int32) {
 	m.ContextID = val
 }
 
-// GetCurrencyID returns the CurrencyID property
-func (m Asset) GetCurrencyID() int32 {
-	return m.CurrencyID
-}
-
-// SetCurrencyID sets the CurrencyID property
-func (m *Asset) SetCurrencyID(val int32) {
-	m.CurrencyID = val
-}
-
 // GetInstanceID returns the InstanceID property
 func (m Asset) GetInstanceID() int32 {
 	return m.InstanceID
@@ -103,14 +77,4 @@ func (m Asset) GetInstanceID() int32 {
 // SetInstanceID sets the InstanceID property
 func (m *Asset) SetInstanceID(val int32) {
 	m.InstanceID = val
-}
-
-// GetMissing returns the Missing property
-func (m Asset) GetMissing() bool {
-	return m.Missing
-}
-
-// SetMissing sets the Missing property
-func (m *Asset) SetMissing(val bool) {
-	m.Missing = val
 }
