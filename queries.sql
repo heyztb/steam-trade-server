@@ -1,10 +1,10 @@
 -- name: CheckItem :one
 SELECT exists(
-  select 1 from Inventory where app_id = $1 AND asset_id = $2 LIMIT 1
+  select 1 from Items where app_id = $1 AND asset_id = $2 LIMIT 1
 );
 
--- name: InsertItem :one
-INSERT INTO Inventory (
+-- name: InsertItem :exec
+INSERT INTO Items (
   bot_id,
   app_id,
   asset_id,
@@ -12,8 +12,21 @@ INSERT INTO Inventory (
   instance_id
 ) VALUES (
   $1, $2, $3, $4, $5
-) RETURNING *;
+);
 
 -- name: RemoveItem :exec
-DELETE FROM Inventory
+DELETE FROM Items
 WHERE app_id = $1 AND asset_id = $2;
+
+-- name: GetAllBots :many
+SELECT * FROM Bots;
+
+-- name: InsertBot :exec
+INSERT INTO Bots (
+  username,
+  passwd,
+  shared_secret,
+  identity_secret
+) VALUES (
+  $1, $2, $3, $4
+);
