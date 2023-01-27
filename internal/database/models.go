@@ -6,7 +6,15 @@ package database
 
 import ()
 
-type Inventory struct {
+type Bot struct {
+	ID             int64
+	Username       string
+	Passwd         string
+	SharedSecret   string
+	IdentitySecret string
+}
+
+type Item struct {
 	ID         int64
 	BotID      int64
 	AppID      int64

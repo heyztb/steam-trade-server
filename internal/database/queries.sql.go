@@ -11,7 +11,7 @@ import (
 
 const checkItem = `-- name: CheckItem :one
 SELECT exists(
-  select 1 from Inventory where app_id = $1 AND asset_id = $2 LIMIT 1
+  select 1 from Items where app_id = $1 AND asset_id = $2 LIMIT 1
 )
 `
 
@@ -27,8 +27,69 @@ func (q *Queries) CheckItem(ctx context.Context, arg CheckItemParams) (bool, err
 	return exists, err
 }
 
-const insertItem = `-- name: InsertItem :one
-INSERT INTO Inventory (
+const getAllBots = `-- name: GetAllBots :many
+SELECT id, username, passwd, shared_secret, identity_secret FROM Bots
+`
+
+func (q *Queries) GetAllBots(ctx context.Context) ([]Bot, error) {
+	rows, err := q.db.QueryContext(ctx, getAllBots)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Bot
+	for rows.Next() {
+		var i Bot
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.Passwd,
+			&i.SharedSecret,
+			&i.IdentitySecret,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const insertBot = `-- name: InsertBot :exec
+INSERT INTO Bots (
+  username,
+  passwd,
+  shared_secret,
+  identity_secret
+) VALUES (
+  $1, $2, $3, $4
+)
+`
+
+type InsertBotParams struct {
+	Username       string
+	Passwd         string
+	SharedSecret   string
+	IdentitySecret string
+}
+
+func (q *Queries) InsertBot(ctx context.Context, arg InsertBotParams) error {
+	_, err := q.db.ExecContext(ctx, insertBot,
+		arg.Username,
+		arg.Passwd,
+		arg.SharedSecret,
+		arg.IdentitySecret,
+	)
+	return err
+}
+
+const insertItem = `-- name: InsertItem :exec
+INSERT INTO Items (
   bot_id,
   app_id,
   asset_id,
@@ -36,7 +97,7 @@ INSERT INTO Inventory (
   instance_id
 ) VALUES (
   $1, $2, $3, $4, $5
-) RETURNING id, bot_id, app_id, asset_id, class_id, instance_id
+)
 `
 
 type InsertItemParams struct {
@@ -47,28 +108,19 @@ type InsertItemParams struct {
 	InstanceID int64
 }
 
-func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) (Inventory, error) {
-	row := q.db.QueryRowContext(ctx, insertItem,
+func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) error {
+	_, err := q.db.ExecContext(ctx, insertItem,
 		arg.BotID,
 		arg.AppID,
 		arg.AssetID,
 		arg.ClassID,
 		arg.InstanceID,
 	)
-	var i Inventory
-	err := row.Scan(
-		&i.ID,
-		&i.BotID,
-		&i.AppID,
-		&i.AssetID,
-		&i.ClassID,
-		&i.InstanceID,
-	)
-	return i, err
+	return err
 }
 
 const removeItem = `-- name: RemoveItem :exec
-DELETE FROM Inventory
+DELETE FROM Items
 WHERE app_id = $1 AND asset_id = $2
 `
 
