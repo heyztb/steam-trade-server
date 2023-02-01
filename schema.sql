@@ -1,4 +1,3 @@
--- +migrate Up
 CREATE TABLE Bots (
   id INTEGER PRIMARY KEY,
   username TEXT NOT NULL UNIQUE,
@@ -14,12 +13,4 @@ CREATE TABLE Items (
   asset_id INTEGER NOT NULL,
   class_id INTEGER NOT NULL,
   instance_id INTEGER NOT NULL
-);
-
-CREATE INDEX app_id_idx ON Items (
-  app_id 
-);
-
-CREATE INDEX asset_id_idx ON Items (
-  asset_id 
 );
