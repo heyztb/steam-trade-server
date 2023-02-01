@@ -1,24 +1,25 @@
-CREATE TABLE Items (
-  id BIGSERIAL PRIMARY KEY,
-  bot_id BIGINT NOT NULL,
-  app_id BIGINT NOT NULL,
-  asset_id BIGINT NOT NULL,
-  class_id BIGINT NOT NULL,
-  instance_id BIGINT NOT NULL
-);
-
+-- +migrate Up
 CREATE TABLE Bots (
-  id BIGSERIAL PRIMARY KEY,
-  username TEXT NOT NULL,
+  id INTEGER PRIMARY KEY,
+  username TEXT NOT NULL UNIQUE,
   passwd TEXT NOT NULL,
-  shared_secret TEXT NOT NULL,
-  identity_secret TEXT NOT NULL
+  shared_secret TEXT NOT NULL UNIQUE,
+  identity_secret TEXT NOT NULL UNIQUE
 );
 
-CREATE INDEX app_id_idx ON Inventory (
+CREATE TABLE Items (
+  id INTEGER PRIMARY KEY,
+  bot_id INTEGER NOT NULL,
+  app_id INTEGER NOT NULL,
+  asset_id INTEGER NOT NULL,
+  class_id INTEGER NOT NULL,
+  instance_id INTEGER NOT NULL
+);
+
+CREATE INDEX app_id_idx ON Items (
   app_id 
 );
 
-CREATE INDEX asset_id_idx ON Inventory (
+CREATE INDEX asset_id_idx ON Items (
   asset_id 
 );

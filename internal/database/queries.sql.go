@@ -11,7 +11,7 @@ import (
 
 const checkItem = `-- name: CheckItem :one
 SELECT exists(
-  select 1 from Items where app_id = $1 AND asset_id = $2 LIMIT 1
+  select 1 from Items where app_id = ? AND asset_id = ? LIMIT 1
 )
 `
 
@@ -20,11 +20,11 @@ type CheckItemParams struct {
 	AssetID int64
 }
 
-func (q *Queries) CheckItem(ctx context.Context, arg CheckItemParams) (bool, error) {
+func (q *Queries) CheckItem(ctx context.Context, arg CheckItemParams) (interface{}, error) {
 	row := q.db.QueryRowContext(ctx, checkItem, arg.AppID, arg.AssetID)
-	var exists bool
-	err := row.Scan(&exists)
-	return exists, err
+	var column_1 interface{}
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const getAllBots = `-- name: GetAllBots :many
@@ -60,6 +60,23 @@ func (q *Queries) GetAllBots(ctx context.Context) ([]Bot, error) {
 	return items, nil
 }
 
+const getRandomBot = `-- name: GetRandomBot :one
+SELECT id, username, passwd, shared_secret, identity_secret FROM Bots ORDER BY random() LIMIT 1
+`
+
+func (q *Queries) GetRandomBot(ctx context.Context) (Bot, error) {
+	row := q.db.QueryRowContext(ctx, getRandomBot)
+	var i Bot
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Passwd,
+		&i.SharedSecret,
+		&i.IdentitySecret,
+	)
+	return i, err
+}
+
 const insertBot = `-- name: InsertBot :exec
 INSERT INTO Bots (
   username,
@@ -67,7 +84,7 @@ INSERT INTO Bots (
   shared_secret,
   identity_secret
 ) VALUES (
-  $1, $2, $3, $4
+  ?, ?, ?, ? 
 )
 `
 
@@ -96,7 +113,7 @@ INSERT INTO Items (
   class_id,
   instance_id
 ) VALUES (
-  $1, $2, $3, $4, $5
+  ?, ?, ?, ?, ? 
 )
 `
 
@@ -121,7 +138,7 @@ func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) error {
 
 const removeItem = `-- name: RemoveItem :exec
 DELETE FROM Items
-WHERE app_id = $1 AND asset_id = $2
+WHERE app_id = ? AND asset_id = ?
 `
 
 type RemoveItemParams struct {
