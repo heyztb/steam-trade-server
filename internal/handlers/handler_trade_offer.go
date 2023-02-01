@@ -31,6 +31,8 @@ func NewCreateTradeOfferHandler(db *sql.DB, logger *log.Logger) *createTradeOffe
 }
 
 func (handler *createTradeOfferHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+
 	tp := &models.TradeProposal{}
 
 	if err := json.NewDecoder(r.Body).Decode(tp); err != nil {
@@ -40,30 +42,52 @@ func (handler *createTradeOfferHandler) ServeHTTP(w http.ResponseWriter, r *http
 		}
 		errJson, _ := json.Marshal(errMsg)
 
-		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(400)
 		w.Write(errJson)
 
 		handler.logger.Printf("Error parsing request body: %s\n", err.Error())
 	}
 
-	// TODO: Add logic
-	// var direction tradeDirection
-	// switch {
-	// case len(tp.Offer) == 0 && len(tp.Want) >= 1:
-	// 	direction = ToServer
-	// case len(tp.Offer) >= 1 && len(tp.Want) == 0:
-	// 	direction = ToUser
-	// default:
-	// 	direction = Mutual
-	// }
+	tradeOffer, err := handler.createTradeOffer(tp)
+	if err != nil {
+		errMsg := models.Error{
+			Code:    400,
+			Message: fmt.Sprintf("Error creating trade offer: %s", err.Error()),
+		}
+		errJson, _ := json.Marshal(errMsg)
 
-	// if direction == ToServer {
-	// }
+		w.WriteHeader(400)
+		w.Write(errJson)
 
-	// if direction == ToUser {
-	// }
+		handler.logger.Printf("Error parsing request body: %s\n", err.Error())
+	}
 
-	// if direction == Mutual {
-	// }
+	w.WriteHeader(201)
+	w.Header().Add("Location", tradeOffer)
+	w.Write([]byte(`{}`))
+}
+
+// TODO
+func (h *createTradeOfferHandler) createTradeOffer(proposal *models.TradeProposal) (string, error) {
+
+	var direction tradeDirection
+	switch {
+	case len(proposal.Offer) == 0 && len(proposal.Want) > 0:
+		direction = ToServer
+	case len(proposal.Offer) > 0 && len(proposal.Want) == 0:
+		direction = ToUser
+	default:
+		direction = Mutual
+	}
+
+	switch direction {
+	case ToServer:
+		panic("not implemented")
+	case ToUser:
+		panic("not implemented")
+	case Mutual:
+		panic("not implemented")
+	}
+
+	return "", nil
 }
