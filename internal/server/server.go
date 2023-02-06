@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"database/sql"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -11,16 +13,15 @@ import (
 	"github.com/heyztb/steam-trade-server/internal/router"
 )
 
-func Start() {
-	router := router.NewRouter()
-	httpServer := &http.Server{
-		Addr:    ":3000",
-		Handler: router,
-	}
+type steamTradeServer struct {
+	closers []io.Closer
+	server  *http.Server
+}
 
+func (s *steamTradeServer) Start() error {
 	go func() {
 		log.Default().Println("Server listening on 127.0.0.1:3000")
-		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Fatal server error: %s", err.Error())
 		}
 	}()
@@ -34,6 +35,33 @@ func Start() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	httpServer.Shutdown(ctx)
 	log.Default().Println("Server shutting down")
+
+	for _, c := range s.closers {
+		c.Close()
+	}
+
+	return s.server.Shutdown(ctx)
+}
+
+func Setup() *steamTradeServer {
+	db, err := sql.Open("sqlite3", "steam-trade-server.db")
+	if err != nil {
+		return nil
+	}
+
+	if err := db.Ping(); err != nil {
+		return nil
+	}
+
+	router := router.NewRouter(db)
+	httpServer := &http.Server{
+		Addr:    ":3000",
+		Handler: router,
+	}
+
+	return &steamTradeServer{
+		server:  httpServer,
+		closers: []io.Closer{db},
+	}
 }
