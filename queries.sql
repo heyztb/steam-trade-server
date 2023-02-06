@@ -1,8 +1,3 @@
--- name: CheckItem :one
-SELECT exists(
-  select 1 from Items where app_id = ? AND asset_id = ? LIMIT 1
-);
-
 -- name: InsertItem :exec
 INSERT INTO Items (
   bot_id,
