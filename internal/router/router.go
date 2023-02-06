@@ -34,7 +34,25 @@ func NewRouter(db *sql.DB) http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Method("GET", "/token", handlers.NewTokenHandler(logger))
+	r.Group(func(r chi.Router) {
+		r.Use(httprate.Limit(
+			1,
+			time.Hour,
+			httprate.WithKeyByRealIP(),
+			httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
+				errMsg := models.Error{
+					Code:    429,
+					Message: "Too many requests",
+				}
+				errJson, _ := json.Marshal(errMsg)
+
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(429)
+				w.Write(errJson)
+			}),
+		))
+		r.Method("GET", "/token", handlers.NewTokenHandler(logger))
+	})
 
 	r.Group(func(r chi.Router) {
 		tokenAuth := jwtauth.New("HS256", []byte(os.Getenv("JWT_SECRET")), nil)
