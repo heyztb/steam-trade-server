@@ -9,24 +9,6 @@ import (
 	"context"
 )
 
-const checkItem = `-- name: CheckItem :one
-SELECT exists(
-  select 1 from Items where app_id = ? AND asset_id = ? LIMIT 1
-)
-`
-
-type CheckItemParams struct {
-	AppID   int64
-	AssetID int64
-}
-
-func (q *Queries) CheckItem(ctx context.Context, arg CheckItemParams) (interface{}, error) {
-	row := q.db.QueryRowContext(ctx, checkItem, arg.AppID, arg.AssetID)
-	var column_1 interface{}
-	err := row.Scan(&column_1)
-	return column_1, err
-}
-
 const getAllBots = `-- name: GetAllBots :many
 SELECT id, username, passwd, shared_secret, identity_secret FROM Bots
 `
