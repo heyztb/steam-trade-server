@@ -36,13 +36,6 @@
                 },
                 "description": "https://steamcommunity.com/tradeoffer/{tradeofferid}"
               }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
             }
           },
           "400": {
@@ -50,12 +43,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "$ref": "#/components/schemas/Error"
-                    }
-                  }
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -67,21 +65,47 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "tradeProposal": {
-                    "$ref": "#/components/schemas/TradeProposal",
-                    "description": "The TradeProposal object"
-                  }
-                },
-                "required": [
-                  "tradeProposal"
-                ]
+                "$ref": "#/components/schemas/TradeProposal"
               }
             }
           },
           "description": "The body should contain a TradeProposal object."
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/token": {
+      "parameters": [],
+      "get": {
+        "summary": "Get Token",
+        "operationId": "get-token",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthToken"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Get token used for subsequent requests"
       }
     }
   },
@@ -95,12 +119,8 @@
           {
             "id": 1,
             "trade_url": "https://steamcommunity.com/tradeoffer/new/?partner=118985620&token=cNjbWUDT",
-            "offer": [
-              0
-            ],
-            "want": [
-              0
-            ]
+            "offer": [0],
+            "want": [0]
           }
         ],
         "properties": {
@@ -125,11 +145,7 @@
             }
           }
         },
-        "required": [
-          "trade_url",
-          "offer",
-          "want"
-        ]
+        "required": ["trade_url", "offer", "want"]
       },
       "Asset": {
         "title": "Asset",
@@ -156,13 +172,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "appID",
-          "contextID",
-          "assetID",
-          "classID",
-          "instanceID"
-        ]
+        "required": ["appID", "contextID", "assetID", "classID", "instanceID"]
       },
       "Error": {
         "title": "Error",
@@ -180,24 +190,40 @@
             "example": "Not Found"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ]
+        "required": ["code", "message"]
+      },
+      "AuthToken": {
+        "title": "AuthToken",
+        "x-stoplight": {
+          "id": "f3xc8qc3g0bdf"
+        },
+        "type": "object",
+        "description": "AuthToken represents data returned by the /token endpoint",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiaHR0cDovL2xvY2FsaG9zdDozMDAwIl0sImV4cCI6MTY3NTQ3NDMzOSwiaWF0IjoxNjc1NDcwNzM5LCJpc3MiOiJodHRwczovL2dpdGh1Yi5jb20vaGV5enRiL3N0ZWFtLXRyYWRlLXNlcnZlciIsInNlc3Npb25faWQiOiIyZDY4YjA1YS1kOGM5LTRjOTItYWU0NC1hYTBmMDk0MDUwN2QifQ.XAtJaplLSUVzVUomTgR7t1jinmXjF5Pq0mKFxfTtgEw"
+          },
+          "token_type": {
+            "type": "string",
+            "example": "Bearer",
+            "default": "Bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "default": 3600,
+            "example": 3600
+          }
+        },
+        "required": ["token", "token_type", "expires_in"]
       }
     },
     "securitySchemes": {
-      "Auth": {
-        "name": "Authorization",
+      "Bearer": {
+        "name": "API Key",
         "type": "apiKey",
-        "in": "header",
-        "description": "Bearer token"
+        "in": "header"
       }
     }
-  },
-  "security": [
-    {
-      "Auth": []
-    }
-  ]
+  }
 }
