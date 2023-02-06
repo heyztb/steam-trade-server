@@ -1,13 +1,17 @@
 package handlers
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/Philipp15b/go-steam/v3"
+	"github.com/heyztb/steam-trade-server/internal/database"
 	"github.com/heyztb/steam-trade-server/internal/models"
+	"github.com/pkg/errors"
 )
 
 type tradeDirection string
@@ -31,7 +35,7 @@ func NewCreateTradeOfferHandler(db *sql.DB, logger *log.Logger) *createTradeOffe
 }
 
 func (handler *createTradeOfferHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
 	tp := &models.TradeProposal{}
 
@@ -46,6 +50,7 @@ func (handler *createTradeOfferHandler) ServeHTTP(w http.ResponseWriter, r *http
 		w.Write(errJson)
 
 		handler.logger.Printf("Error parsing request body: %s\n", err.Error())
+		return
 	}
 
 	tradeOffer, err := handler.createTradeOffer(tp)
@@ -59,16 +64,22 @@ func (handler *createTradeOfferHandler) ServeHTTP(w http.ResponseWriter, r *http
 		w.WriteHeader(400)
 		w.Write(errJson)
 
-		handler.logger.Printf("Error parsing request body: %s\n", err.Error())
+		handler.logger.Printf("Error creating trade offer: %s\n", err.Error())
+		return
 	}
 
 	w.WriteHeader(201)
-	w.Header().Add("Location", tradeOffer)
+	w.Header().Set("Location", tradeOffer)
 	w.Write([]byte(`{}`))
 }
 
-// TODO
-func (h *createTradeOfferHandler) createTradeOffer(proposal *models.TradeProposal) (string, error) {
+func (handler *createTradeOfferHandler) createTradeOffer(proposal *models.TradeProposal) (string, error) {
+	queries := database.New(handler.db)
+
+	err := proposal.Validate()
+	if err != nil {
+		return "", errors.Wrap(err, "failed to validate proposal")
+	}
 
 	var direction tradeDirection
 	switch {
@@ -82,11 +93,24 @@ func (h *createTradeOfferHandler) createTradeOffer(proposal *models.TradeProposa
 
 	switch direction {
 	case ToServer:
-		panic("not implemented")
+		botCreds, err := queries.GetRandomBot(context.Background())
+		if err != nil {
+			return "", errors.Wrap(err, "failed to get bot from database")
+		}
+
+		tradeBot := &models.TradeBot{
+			Credentials: &botCreds,
+			Client:      steam.NewClient(),
+			Logger:      log.Default(),
+		}
+
+		go tradeBot.EventHandler()
+
+		tradeBot.Login()
 	case ToUser:
-		panic("not implemented")
+		return "", errors.New("not implemented")
 	case Mutual:
-		panic("not implemented")
+		return "", errors.New("not implemented")
 	}
 
 	return "", nil
