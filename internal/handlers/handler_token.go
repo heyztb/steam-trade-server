@@ -35,6 +35,8 @@ func (handler *tokenHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	sessionId := uuid.New()
 
+	jwt.Settings(jwt.WithFlattenAudience(true))
+
 	tok, err := jwt.NewBuilder().
 		Audience([]string{audience}).
 		Issuer(issuer).
