@@ -4,19 +4,22 @@
       "username": "trade_bot_1_username",
       "password": "trade_bot_1_password",
       "shared_secret": "trade_bot_1_shared_secret",
-      "identity_secret": "trade_bot_1_identity_secret"
+      "identity_secret": "trade_bot_1_identity_secret",
+      "web_api_key": "trade_bot_1_web_api_key"
     },
     {
       "username": "trade_bot_2_username",
       "password": "trade_bot_2_password",
       "shared_secret": "trade_bot_2_shared_secret",
-      "identity_secret": "trade_bot_2_identity_secret"
+      "identity_secret": "trade_bot_2_identity_secret",
+      "web_api_key": "trade_bot_2_web_api_key"
     },
     {
       "username": "trade_bot_3_username",
       "password": "trade_bot_3_password",
       "shared_secret": "trade_bot_3_shared_secret",
-      "identity_secret": "trade_bot_3_identity_secret"
+      "identity_secret": "trade_bot_3_identity_secret",
+      "web_api_key": "trade_bot_2_web_api_key"
     }
   ]
 }
