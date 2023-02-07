@@ -24,7 +24,8 @@ INSERT INTO Bots (
   username,
   passwd,
   shared_secret,
-  identity_secret
+  identity_secret,
+  api_key
 ) VALUES (
-  ?, ?, ?, ? 
+  ?, ?, ?, ?, ?
 );

@@ -3,7 +3,8 @@ CREATE TABLE Bots (
   username TEXT NOT NULL UNIQUE,
   passwd TEXT NOT NULL,
   shared_secret TEXT NOT NULL UNIQUE,
-  identity_secret TEXT NOT NULL UNIQUE
+  identity_secret TEXT NOT NULL UNIQUE,
+  api_key TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE Items (
