@@ -10,7 +10,7 @@ import (
 )
 
 const getAllBots = `-- name: GetAllBots :many
-SELECT id, username, passwd, shared_secret, identity_secret FROM Bots
+SELECT id, username, passwd, shared_secret, identity_secret, api_key FROM Bots
 `
 
 func (q *Queries) GetAllBots(ctx context.Context) ([]Bot, error) {
@@ -28,6 +28,7 @@ func (q *Queries) GetAllBots(ctx context.Context) ([]Bot, error) {
 			&i.Passwd,
 			&i.SharedSecret,
 			&i.IdentitySecret,
+			&i.ApiKey,
 		); err != nil {
 			return nil, err
 		}
@@ -43,7 +44,7 @@ func (q *Queries) GetAllBots(ctx context.Context) ([]Bot, error) {
 }
 
 const getRandomBot = `-- name: GetRandomBot :one
-SELECT id, username, passwd, shared_secret, identity_secret FROM Bots ORDER BY random() LIMIT 1
+SELECT id, username, passwd, shared_secret, identity_secret, api_key FROM Bots ORDER BY random() LIMIT 1
 `
 
 func (q *Queries) GetRandomBot(ctx context.Context) (Bot, error) {
@@ -55,6 +56,7 @@ func (q *Queries) GetRandomBot(ctx context.Context) (Bot, error) {
 		&i.Passwd,
 		&i.SharedSecret,
 		&i.IdentitySecret,
+		&i.ApiKey,
 	)
 	return i, err
 }
@@ -64,9 +66,10 @@ INSERT INTO Bots (
   username,
   passwd,
   shared_secret,
-  identity_secret
+  identity_secret,
+  api_key
 ) VALUES (
-  ?, ?, ?, ? 
+  ?, ?, ?, ?, ?
 )
 `
 
@@ -75,6 +78,7 @@ type InsertBotParams struct {
 	Passwd         string
 	SharedSecret   string
 	IdentitySecret string
+	ApiKey         string
 }
 
 func (q *Queries) InsertBot(ctx context.Context, arg InsertBotParams) error {
@@ -83,6 +87,7 @@ func (q *Queries) InsertBot(ctx context.Context, arg InsertBotParams) error {
 		arg.Passwd,
 		arg.SharedSecret,
 		arg.IdentitySecret,
+		arg.ApiKey,
 	)
 	return err
 }
