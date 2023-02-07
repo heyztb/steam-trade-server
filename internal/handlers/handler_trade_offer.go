@@ -70,7 +70,7 @@ func (handler *createTradeOfferHandler) ServeHTTP(w http.ResponseWriter, r *http
 
 	w.WriteHeader(201)
 	w.Header().Set("Location", tradeOffer)
-	w.Write([]byte(`{}`))
+	w.Write(nil)
 }
 
 func (handler *createTradeOfferHandler) createTradeOffer(proposal *models.TradeProposal) (string, error) {
@@ -107,6 +107,12 @@ func (handler *createTradeOfferHandler) createTradeOffer(proposal *models.TradeP
 		go tradeBot.EventHandler()
 
 		tradeBot.Login()
+		offerId, err := tradeBot.Trade(proposal.TradeUrl, proposal.Offer, proposal.Want)
+		if err != nil {
+			return "", errors.Wrap(err, "failed to create trade offer")
+		}
+
+		return fmt.Sprintf("https://steamcommunity.com/tradeoffer/%d", *offerId), nil
 	case ToUser:
 		return "", errors.New("not implemented")
 	case Mutual:
